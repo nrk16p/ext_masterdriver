@@ -104,8 +104,20 @@ def fetch_data():
 def transform(df):
 
     df["site_id"] = np.where(df["fleet_group_id"].isin(["1","2"]), 2, 3)
-    df["truck_type"] = np.where(df["fleet_group_id"].isin(["1","2"]), "Mixer", "Trailer")
-
+    
+    df["fleet_group_id"] = df["fleet_group_id"].astype(str)
+    
+    df["truck_type"] = np.select(
+        [
+            df["fleet_group_id"].eq("1"),
+            df["fleet_group_id"].eq("2")
+        ],
+        [
+            "MixerL",
+            "MixerS"
+        ],
+        default="Trailer"
+    )
     df[["first_name", "last_name"]] = df["ชื่อนามสกุล"].str.split(" ", n=1, expand=True)
 
     df = df[df["รหัสพนักงาน"].notna()]
